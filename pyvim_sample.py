@@ -1,41 +1,91 @@
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim
+from pyVmomi import vmodl
 import ssl
 
-s = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-si = SmartConnect(host="192.168.9.242",user="Administrator@info.com",pwd="infohold123ABC@",sslContext=s)
-aboutInfo=si.content.about
+__author__ = ' '
 
 
-print(aboutInfo.fullName)
-print(aboutInfo.build)
-print(aboutInfo.version)
-print(aboutInfo.osType)
-print(aboutInfo.vendor)
+def vShereconnect():
+    try:
+        s = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        si = SmartConnect(host="192.168.9.242",user="Administrator@info.com",pwd="infohold123ABC@",sslContext=s)
+        print("连接成功")
+        return si
+    except Exception:
+        print("连接错误")
 
-print('____________________________')
 
-datacenter =si.content.rootFolder.childEntity[0]
-vms = datacenter.vmFolder.childEntity
+def wait_for_tasks(content, tasks):
+    """
+    Given the tasks, it returns after all the tasks are complete
+    """
+    taskList = [str(task) for task in tasks]
 
-for i in vms:
-    print(i.name)
+    # Create filter
+    objSpecs = [
+        vmodl.query.PropertyCollector.ObjectSpec(obj=task) for task in tasks
+    ]
+    propSpec = vmodl.query.PropertyCollector.PropertySpec(
+        type=vim.Task, pathSet=[], all=True)
+    filterSpec = vmodl.query.PropertyCollector.FilterSpec()
+    filterSpec.objectSet = objSpecs
+    filterSpec.propSet = [propSpec]
+    task_filter = content.propertyCollector.CreateFilter(filterSpec, True)
 
-print('____________________________')
+    try:
+        version, state = None, None
 
-#打开虚拟机
-def poweronvm(vm_name):
-    content = si.content
-    objView = content.viewManager.CreateContainerView(content.rootFolder,[vim.VirtualMachine],True)
-    vmList = objView.view
-    objView.Destroy()
-    tasks = [vm.PowerOn() for vm in vmList if vm.name in vm_name]
-    print(tasks)
-    WaitForTasks(tasks, si)
-    print("虚拟机启动成功")
+        # Loop looking for updates till the state moves to a completed state.
+        while len(taskList):
+            update = content.propertyCollector.WaitForUpdates(version)
+            for filterSet in update.filterSet:
+                for objSet in filterSet.objectSet:
+                    task = objSet.obj
+                    for change in objSet.changeSet:
+                        if change.name == 'info':
+                            state = change.val.state
+                        elif change.name == 'info.state':
+                            state = change.val
+                        else:
+                            continue
+
+                        if not str(task) in taskList:
+                            continue
+
+                        if state == vim.TaskInfo.State.success:
+                            # Remove task from taskList
+                            taskList.remove(str(task))
+                        elif state == vim.TaskInfo.State.error:
+                            raise task.info.error
+            # Move to next version
+            version = update.version
+    finally:
+        if task_filter:
+            task_filter.Destroy()
+
+#open vm power
+def poweronvm(content,mo):
+    """
+    Powers on a VM and wait for power on operation to complete
+    """
+    if not isinstance(mo, vim.VirtualMachine):
+        return False
+
+    print('Powering on vm {0}'.format(mo._GetMoId()))
+    try:
+        wait_for_tasks(content, [mo.PowerOn()])
+        print('{0} powered on successfully'.format(mo._GetMoId()))
+    except Exception:
+        print('Unexpected error while powering on vm {0}'.format(
+            mo._GetMoId()))
+        return False
+    return True
+
+
 
 #获取虚拟机状态
-def getvmstatus(vm_name):
+def getvmstatus(vm_name,si):
     content = si.RetrieveContent()
     for child in content.rootFolder.childEntity:
         if hasattr(child, 'vmFolder'):
@@ -45,17 +95,6 @@ def getvmstatus(vm_name):
             for vm in vmList:
                 if vm.summary.config.name == vm_name :
                     print(vm.summary.runtime.powerState)
-                
 
-
-poweronvm('centos-7.6-1810-mddlz-240')
-getvmstatus('centos-7.6-1810-mddlz-240')
-
-
-
-
-
-
-
-
-
+si = vShereconnect()          
+getvmstatus('centos-7.6-1810-mddlz-240',si)
