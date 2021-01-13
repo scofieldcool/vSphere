@@ -97,4 +97,5 @@ def getvmstatus(vm_name,si):
                     print(vm.summary.runtime.powerState)
 
 si = vShereconnect()          
-getvmstatus('centos-7.6-1810-mddlz-240',si)
+# getvmstatus('centos-7.6-1810-mddlz-240',si)
+poweronvm(si,'centos-7.6-1810-mddlz-240')
