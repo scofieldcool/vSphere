@@ -406,7 +406,7 @@ def main():
         #del_nic(si, vm,2)
         #add_nic(si, vm, 'VM Network')
         #update_virtual_nic_state(si, vm, 3, 'disconnect')
-        virtual_expansion_contraction_capacity(si, vm, 1, 1)
+        virtual_expansion_contraction_capacity(si, vm, 8, 8)
        
         '''
         relospec = vim.vm.RelocateSpec()

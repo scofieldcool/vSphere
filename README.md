@@ -1,2 +1,2 @@
 # vSphere
-pyvm  samples
+pyvmomi  samples
