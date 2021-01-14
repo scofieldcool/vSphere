@@ -4,7 +4,7 @@ import atexit
 import argparse
 import getpass
 
-import tasks
+from tools import tasks
 
 try:
     from pyVmomi import vim

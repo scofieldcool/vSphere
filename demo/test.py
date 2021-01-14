@@ -121,11 +121,6 @@ def clone_vm(
     task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
     wait_for_task(task)
 
-def relocate_vm(SI,vm, spec, priority):
-    #spec type:VirtualMachineRelocateSpec  The specification of where to relocate the virtual machine.
-    #priority type:VirtualMachineMovePriority  The task priority
-    TASK = vm.RelocateVM_Task(spec, priority)
-    wait_for_task(SI, [TASK])
 
 def get_hdd_prefix_label(language):
     language_prefix_label_mapper = {
@@ -406,20 +401,8 @@ def main():
         #del_nic(si, vm,2)
         #add_nic(si, vm, 'VM Network')
         #update_virtual_nic_state(si, vm, 3, 'disconnect')
-        virtual_expansion_contraction_capacity(si, vm, 8, 8)
+        #virtual_expansion_contraction_capacity(si, vm, 8, 8)
        
-        '''
-        relospec = vim.vm.RelocateSpec()
-        relospec.datastore = datastore
-        relospec.host = host
-        relospec.pool = resource_pool
-        TASK = vm.RelocateVM_Task(spec = relospec, )
-        tasks.wait_for_tasks(si,[TASK])
-        #print(vim.vm.MovePriority)
-        #relocate_vm(si, vm,)
-        #vm.RebootGuest()# 重启虚拟机操作系统
-        '''
-  
 # start this thing
 if __name__ == "__main__":
     main()
