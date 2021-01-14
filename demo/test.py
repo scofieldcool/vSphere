@@ -32,7 +32,6 @@ def wait_for_task(task):
 if hasattr(requests.packages.urllib3, 'disable_warnings'):
     requests.packages.urllib3.disable_warnings()
            
-
 def get_obj(content, vimtype, name):
     """
     Return an object by name, if name is None the
@@ -51,77 +50,7 @@ def get_obj(content, vimtype, name):
             break
 
     return obj
-
-def clone_vm(
-
-        content, template, vm_name, si,
-        datacenter_name, vm_folder, datastore_name,
-        cluster_name, power_on, resource_pool, datastorecluster_name):
-    """
-    Clone a VM from a template/VM, datacenter_name, vm_folder, datastore_name
-    cluster_name, resource_pool, and power_on are all optional.
-    """
-
-    # if none git the first one
-    datacenter = get_obj(content, [vim.Datacenter], datacenter_name)
-
-    
-    if vm_folder:
-        destfolder = get_obj(content, [vim.Folder], vm_folder)
-    else:
-        destfolder = datacenter.vmFolder 
-    if datastore_name:
-        datastore = get_obj(content, [vim.Datastore], datastore_name)
-    else:
-        datastore = get_obj(
-            content, [vim.Datastore], template.datastore[0].info.name)
-
-    # if None, get the first one
-    cluster = get_obj(content, [vim.ClusterComputeResource], cluster_name)
-
-    if resource_pool:
-        resource_pool = get_obj(content, [vim.ResourcePool], resource_pool)
-    else:
-        resource_pool = cluster.resourcePool
-
-    vmconf = vim.vm.ConfigSpec()
-
-    if datastorecluster_name:
-        podsel = vim.storageDrs.PodSelectionSpec()
-        pod = get_obj(content, [vim.StoragePod], datastorecluster_name)
-        podsel.storagePod = pod
-
-        storagespec = vim.storageDrs.StoragePlacementSpec()
-        storagespec.podSelectionSpec = podsel
-        storagespec.type = 'create'
-        storagespec.folder = destfolder
-        storagespec.resourcePool = resource_pool
-        storagespec.configSpec = vmconf
-
-        try:
-            rec = content.storageResourceManager.RecommendDatastores(
-                storageSpec=storagespec)
-            rec_action = rec.recommendations[0].action[0]
-            real_datastore_name = rec_action.destination.name
-        except:
-            real_datastore_name = template.datastore[0].info.name
-
-        datastore = get_obj(content, [vim.Datastore], real_datastore_name)
-
-    # set relospec
-    relospec = vim.vm.RelocateSpec()
-    relospec.datastore = datastore
-    relospec.pool = resource_pool
-
-    clonespec = vim.vm.CloneSpec()
-    clonespec.location = relospec
-    clonespec.powerOn = power_on
-
-    print("cloning VM...")
-    task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
-    wait_for_task(task)
-
-
+   
 def get_hdd_prefix_label(language):
     language_prefix_label_mapper = {
         'English': 'Hard disk ',
@@ -270,8 +199,6 @@ def add_nic(si, vm, network_name):
     spec.deviceChange = nic_changes
     e = vm.ReconfigVM_Task(spec=spec)
 
-    print("NIC CARD ADDED")
-
 def update_virtual_nic_state(si, vm_obj, nic_number, new_nic_state):
     """
     :param si: Service Instance
@@ -336,8 +263,74 @@ def virtual_expansion_contraction_capacity(si, vm, numcpu, memory):
     task = vm.ReconfigVM_Task(spec=config)
 
     tasks.wait_for_tasks(si, [task])
+
+def clone_vm(
+         content, template, vm_name, si,
+        datacenter_name, vm_folder, datastore_name,
+        cluster_name, power_on, resource_pool, datastorecluster_name):
+    """
+    Clone a VM from a template/VM, datacenter_name, vm_folder, datastore_name
+    cluster_name, resource_pool, and power_on are all optional.
+    """
+    # if none git the first one
+    datacenter = get_obj(content, [vim.Datacenter], datacenter_name)
+
+    
+    if vm_folder:
+        destfolder = get_obj(content, [vim.Folder], vm_folder)
+    else:
+        destfolder = datacenter.vmFolder 
+    if datastore_name:
+        datastore = get_obj(content, [vim.Datastore], datastore_name)
+    else:
+        datastore = get_obj(
+            content, [vim.Datastore], template.datastore[0].info.name)
+    # if None, get the first one
+    cluster = get_obj(content, [vim.ClusterComputeResource], cluster_name)
+
+    if resource_pool:
+        resource_pool = get_obj(content, [vim.ResourcePool], resource_pool)
+    else:
+        resource_pool = cluster.resourcePool
+
+    vmconf = vim.vm.ConfigSpec()
+
+    if datastorecluster_name:
+        podsel = vim.storageDrs.PodSelectionSpec()
+        pod = get_obj(content, [vim.StoragePod], datastorecluster_name)
+        podsel.storagePod = pod
+
+        storagespec = vim.storageDrs.StoragePlacementSpec()
+        storagespec.podSelectionSpec = podsel
+        storagespec.type = 'create'
+        storagespec.folder = destfolder
+        storagespec.resourcePool = resource_pool
+        storagespec.configSpec = vmconf
+
+        try:
+            rec = content.storageResourceManager.RecommendDatastores(
+                storageSpec=storagespec)
+            rec_action = rec.recommendations[0].action[0]
+            real_datastore_name = rec_action.destination.name
+        except:
+            real_datastore_name = template.datastore[0].info.name
+
+        datastore = get_obj(content, [vim.Datastore], real_datastore_name)
+
+    # set relospec
+    relospec = vim.vm.RelocateSpec()
+    relospec.datastore = datastore
+    relospec.pool = resource_pool
+
+    clonespec = vim.vm.CloneSpec()
+    clonespec.location = relospec
+    clonespec.powerOn = power_on
+
+    print("cloning VM...")
+    task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
+    wait_for_task(task)
+
 def main():
-  
     #connect info
     host = '192.168.9.242' #vSpehre service to connect to
     user = 'administrator@info.com'
@@ -345,17 +338,20 @@ def main():
     port = '443'
     no_ssl =True
     #虚拟机参数
-    vm_name ='centos7-test'# 虚拟机名称
-    templatename = 'centos-7.7-1908-test-85'# 模板
+   
     datacenter_name = 'center'# 数据中心
-    vm_folder = 'Test'# 文件夹
+    cluster_name ='cluster'# 集群
     datastore_name ='SAS-190'# 存储
     cluster_name ='cluster'# 集群
-    resource_pool =''# 资源池
+
+    vm_name ='test2'# 虚拟机名称
+    templatename = 'centos-7.7-1908-template'# 模板
+    vm_folder = 'Test'# 文件夹
     power_on = False # 'power on the VM after creation
+
+    resource_pool =''# 资源池
     datastorecluster_name= ''#数据存储群集
     host_name ='192.168.9.190'
-    folder_name='Test'
 
     # connect this thing
     si = None
@@ -384,25 +380,48 @@ def main():
     # 宿主机对象
     host = get_obj(content, [vim.HostSystem], host_name)
     # 资源池
-    resource_pool = cluster.resourcePool
+    #resource_pool = cluster.resourcePool
     # 存储对象
     datastore = get_obj(content, [vim.Datastore], datastore_name)
     # 文件夹对象
-    folder= get_obj(content, [vim.Folder], folder_name)
+    folder= get_obj(content, [vim.Folder], vm_folder)
     # 虚拟机对象
     vm = get_obj(content, [vim.VirtualMachine], vm_name)
 
     #print(datacenter, cluster, resource_pool, host, datastore, folder, vm)
-    net_name ='VM Network'
+
     if vm: 
         ww.print_vm_info(vm)
         #delete_virtual_disk(si, vm, '4', 'English')
-        #add_disk(vm, si, 30, 'thin')
+        #add_disk(vm, si, 300, 'thin')
         #del_nic(si, vm,2)
         #add_nic(si, vm, 'VM Network')
         #update_virtual_nic_state(si, vm, 3, 'disconnect')
-        #virtual_expansion_contraction_capacity(si, vm, 8, 8)
-       
+        #virtual_expansion_contraction_capacity(si, vm, 32, 32)
+    else:
+        datacenter = get_obj(content, [vim.Datacenter], datacenter_name)
+
+        if not datacenter:
+            print('datecenter not found!');
+            return
+
+        template = get_obj(content, [vim.VirtualMachine], templatename)
+   
+        if not template:
+            print('template not found!')
+            return
+
+        destfolder = get_obj(content, [vim.Folder], vm_folder)
+        if not destfolder:
+            print('folder not found！')
+            return
+        #print('template:{0} datacenter:{1} destfolder:{2}'.format(template.name, datacenter.name, destfolder.name))
+        clone_vm(
+        content, template, vm_name, si,
+        datacenter_name, vm_folder,
+        datastore_name, cluster_name,
+        power_on,resource_pool,datastorecluster_name)
+        
 # start this thing
 if __name__ == "__main__":
     main()

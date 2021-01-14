@@ -40,6 +40,9 @@ def print_vm_info(vm, depth=1, max_depth=10):
     print("Name       : {}".format(summary.config.name))
     print("Path       : {}".format(summary.config.vmPathName))
     print("Guest      : {}".format(summary.config.guestFullName))
+    print("numCPU     : {}".format(summary.config.numCpu))
+    print("memorySizeMB:{}".format(int(summary.config.memorySizeMB / 1024)))
+    print("numVirtualDisks:{}".format(summary.config.numVirtualDisks))
     annotation = summary.config.annotation
     if annotation:
         print("Annotation : {}".format(annotation))
