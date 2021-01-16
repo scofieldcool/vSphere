@@ -344,7 +344,7 @@ def main():
     datastore_name ='SAS-190'# 存储
     cluster_name ='cluster'# 集群
 
-    vm_name ='test2'# 虚拟机名称
+    vm_name ='centos-7-test'# 虚拟机名称
     templatename = 'centos-7.7-1908-template'# 模板
     vm_folder = 'Test'# 文件夹
     power_on = False # 'power on the VM after creation
@@ -393,7 +393,7 @@ def main():
     if vm: 
         ww.print_vm_info(vm)
         #delete_virtual_disk(si, vm, '4', 'English')
-        #add_disk(vm, si, 300, 'thin')
+        add_disk(vm, si, 20, 'thick')
         #del_nic(si, vm,2)
         #add_nic(si, vm, 'VM Network')
         #update_virtual_nic_state(si, vm, 3, 'disconnect')
