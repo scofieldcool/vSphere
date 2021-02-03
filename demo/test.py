@@ -274,8 +274,6 @@ def clone_vm(
     """
     # if none git the first one
     datacenter = get_obj(content, [vim.Datacenter], datacenter_name)
-
-    
     if vm_folder:
         destfolder = get_obj(content, [vim.Folder], vm_folder)
     else:
@@ -412,15 +410,18 @@ def main():
             return
 
         destfolder = get_obj(content, [vim.Folder], vm_folder)
+        print(destfolder.childEntity)
+        '''
         if not destfolder:
             print('folder not found！')
-            return
+            return    
         #print('template:{0} datacenter:{1} destfolder:{2}'.format(template.name, datacenter.name, destfolder.name))
         clone_vm(
         content, template, vm_name, si,
         datacenter_name, vm_folder,
         datastore_name, cluster_name,
         power_on,resource_pool,datastorecluster_name)
+        '''
         
 # start this thing
 if __name__ == "__main__":
