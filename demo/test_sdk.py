@@ -14,3 +14,5 @@ session.verify = False
 vsphere_client = create_vsphere_client(server = 'http://192.168.9.242', username = 'administrator@info.com', password = 'infohold123ABC@', session = session)
 
 vsphere_client.vcenter.VM.list()
+
+
