@@ -342,7 +342,7 @@ def main():
     datastore_name ='SAS-190'# 存储
     cluster_name ='cluster'# 集群
 
-    vm_name ='centos-7-test'# 虚拟机名称
+    vm_name ='centos-7-test1'# 虚拟机名称
     templatename = 'centos-7.7-1908-template'# 模板
     vm_folder = 'Test'# 文件夹
     power_on = False # 'power on the VM after creation
@@ -411,7 +411,7 @@ def main():
 
         destfolder = get_obj(content, [vim.Folder], vm_folder)
         print(destfolder.childEntity)
-        '''
+        
         if not destfolder:
             print('folder not found！')
             return    
@@ -421,7 +421,6 @@ def main():
         datacenter_name, vm_folder,
         datastore_name, cluster_name,
         power_on,resource_pool,datastorecluster_name)
-        '''
         
 # start this thing
 if __name__ == "__main__":
