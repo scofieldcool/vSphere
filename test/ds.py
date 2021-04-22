@@ -73,9 +73,11 @@ if __name__ == '__main__':
         #cpu 
         total_cpu = host.summary.hardware.cpuMhz * 16 * 2 
         us_cpu = host.summary.quickStats.overallCpuUsage
-
+        datastorelist = []
         for ds in host.datastore:
+            datastorelist.append(ds)
             print(ds.name)
+        print('存储链路数：{}'.format(len(datastorelist)))#存储链路数量
             
 
 
@@ -84,6 +86,7 @@ if __name__ == '__main__':
         content.rootFolder, [vim.VirtualMachine], True)
 
     #虚拟机
+
     for vm in container.view:
         
         snapshot =vm.snapshot
