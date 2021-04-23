@@ -4,6 +4,7 @@ import sys
 import re
 import ssl
 import json
+from decimal import Decimal, getcontext
 from multiprocessing.pool import ThreadPool
 from pyVmomi import vim
 from pyVim.connect import Disconnect, SmartConnect
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     ip = '192.168.9.242'
     port = 443
     user = 'administrator@info.com'
-    password = 'infohold123ABC@'
+    password = 'infohold123ABC@'          
 
     content, si = connect_vsphere(ip, user, password, port)
 
@@ -87,6 +88,7 @@ if __name__ == '__main__':
 
     #虚拟机
 
+    print(round(1.5))
     for vm in container.view:
         
         snapshot =vm.snapshot
