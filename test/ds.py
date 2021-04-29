@@ -47,17 +47,12 @@ def connect_vsphere(host,user, pwd, port=443):
         print("vSphere {} 连接失败 {}".format(host, e))
         sys.exit(1)
          
-
-
 if __name__ == '__main__':
-
     ip = '192.168.9.242'
     port = 443
     user = 'administrator@info.com'
     password = 'infohold123ABC@'          
-
     content, si = connect_vsphere(ip, user, password, port)
-
     container = content.viewManager.CreateContainerView(
         content.rootFolder, [vim.HostSystem], True)
 
@@ -70,7 +65,6 @@ if __name__ == '__main__':
         print( '主机:',host.name,'内存使用率' '%.2f%%'  %(p * 100))
         #网卡
         print( '网卡数量: {}张'.format(host.summary.hardware.numNics))
-
         #cpu 
         total_cpu = host.summary.hardware.cpuMhz * 16 * 2 
         us_cpu = host.summary.quickStats.overallCpuUsage
@@ -79,35 +73,22 @@ if __name__ == '__main__':
             datastorelist.append(ds)
             print(ds.name)
         print('存储链路数：{}'.format(len(datastorelist)))#存储链路数量
-            
-
-
-    
     container = content.viewManager.CreateContainerView(
         content.rootFolder, [vim.VirtualMachine], True)
-
     #虚拟机
-
     print(round(1.5))
     for vm in container.view:
-        
         snapshot =vm.snapshot
         print(vm.name)#虚拟机名称
-        
-
-    
     container = content.viewManager.CreateContainerView(
         content.rootFolder, [vim.Datastore], True)
-
     #存储
     for datastore in container.view:
-        capacity = datastore.summary.capacity / 1099511627776
-        freeSpace = datastore.summary.freeSpace / 1099511627776
-        us_Space = capacity -  freeSpace
-        p = us_Space / capacity
-        print('存储名称：{} 总容量：{} 剩余容量： {}'.format(datastore.name,capacity, freeSpace))
-        print('使用率' '%.2f%%'  %(p * 100))
-        
+        capacity = (datastore.summary.capacity / 1099511627776)
+        freeSpace = (datastore.summary.freeSpace / 1099511627776)
+        us_Space = (capacity -  freeSpace)
+        p = (us_Space / capacity)
+        print('存储名称：{} 总容量：{}T 剩余容量： {}T 使用率: {}'.format(datastore.name,int(round(capacity)), round(freeSpace,2), '%.2f%%'  %(p * 100)))
         
     
 
