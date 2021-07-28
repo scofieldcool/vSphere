@@ -90,12 +90,3 @@ if __name__ == '__main__':
         p = (us_Space / capacity)
         print('存储名称：{} 总容量：{}T 剩余容量： {}T 使用率: {}'.format(datastore.name,int(round(capacity)), round(freeSpace,2), '%.2f%%'  %(p * 100)))
         
-    
-
-
-
-
-
-
-
-    

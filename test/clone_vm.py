@@ -16,6 +16,7 @@ def wait_for_task(task):
             print(task.info.result)
             return task.info.result
         if task.info.state == 'error':
+            sys.exit(1)
             print("there was an error")
             print(task.info)
             task_done = True
@@ -246,12 +247,45 @@ def clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, vm_ip, vm_net
         sys.exit(1)
 
 
+def ip_assign(vm):
+    adaptermap = vim.vm.customization.AdapterMapping()
+    globalip = vim.vm.customization.GlobalIPSettings()
+    adaptermap.adapter = vim.vm.customization.IPSettings()
+
+    """Static IP Configuration"""
+    adaptermap.adapter.ip = vim.vm.customization.FixedIp()
+    adaptermap.adapter.ip.ipAddress = '127.0.0.1'
+    adaptermap.adapter.subnetMask = '255.255.255.0'
+    adaptermap.adapter.gateway = '127.0.0.1' 
+    globalip.dnsServerList = '223.5.5.5'
+
+    #adaptermap.adapter.dnsDomain = inputs['domain']
+
+    # Hostname settings
+    ident = vim.vm.customization.LinuxPrep()
+    #ident.domain = inputs['domain']
+    ident.hostName = vim.vm.customization.FixedName()
+    ident.hostName.name = 'vm_name'
+
+    customspec = vim.vm.customization.Specification()
+    customspec.nicSettingMap = [adaptermap]
+    customspec.globalIPSettings = globalip
+    customspec.identity = ident
+
+    print ("Reconfiguring VM Networks . . .")
+    task = vm.Customize(spec=customspec)
+  
+    
+
+
+
+
 if __name__ == '__main__':
 
     ip = '192.168.9.242'
     port = 443
     user = 'administrator@info.com'
-    password = 'infohold123ABC@'
+    password = 'infohold123ABC@@'
 
     content, si = connect_vsphere(ip, user, password, port)
     host_ips = []
@@ -270,6 +304,15 @@ if __name__ == '__main__':
     memory = 2
     cpu_num = 2
     disk_size = ''
+    
+    vm = get_obj(content, [vim.VirtualMachine], 'windows-10-1903-test-239')
+    #ip_assign(vm)
+    print(vm)
+    vm.Rename('windows-10-1903-test-239_1')
+
+
+
+    '''
 
     for line in re.split(';', vm_name.strip()):
         if not line.strip():
@@ -300,7 +343,7 @@ if __name__ == '__main__':
             sys.exit(1)
         print('获取到模板对象 {}'.format(template_obj))
         host_obj = get_obj(content, [vim.HostSystem], host)
-        if not host_obj:
+        if not host_obj: 
             print('主机 {} 不存在'.format(host))
             sys.exit(1)
         print('获取到主机对象 {}'.format(host_obj))
@@ -323,6 +366,7 @@ if __name__ == '__main__':
         clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, 
                  vm_ip, vm_netmask, vm_gateway, power, cpu_num, memory, 
                  disk_size, vm_hostname, dns, folder_obj)
+        '''
 
 
 
