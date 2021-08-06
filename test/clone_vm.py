@@ -35,6 +35,16 @@ def get_obj(content, vimtype, name):
             break
     return obj
 
+def get_obj1(content, vimtype):
+    container = content.viewManager.CreateContainerView(
+        content.rootFolder, vimtype, True)
+    vm_obj = []
+    for c in container.view:
+       vm_obj.append(c)
+    return vm_obj
+
+
+
 def connect_vsphere(host,user, pwd, port=443):
     try:
         context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
@@ -275,8 +285,23 @@ def ip_assign(vm):
     print ("Reconfiguring VM Networks . . .")
     task = vm.Customize(spec=customspec)
   
+def virtual_nic_state(vm_obj):
+    vms = None
+    i = 0
+    virtual_nic_device = []
+    for dev in vm_obj.config.hardware.device:
+        if isinstance(dev, vim.vm.device.VirtualEthernetCard):  
+            virtual_nic_device.append(dev)
+    if not virtual_nic_device:
+        print('vm{} not nic_device'.format(vm_obj))
+    if len(virtual_nic_device ) != 0:
+        for nic in virtual_nic_device:
+            if nic.connectable.connected == True:
+                i = i + 1 #如果有网卡连接则加1
+    if i == 0:
+       return vm_obj.name
     
-
+  
 
 
 
@@ -304,11 +329,31 @@ if __name__ == '__main__':
     memory = 2
     cpu_num = 2
     disk_size = ''
+    #content = si.RetrieveContent()
+
+    vm = get_obj1(content, [vim.VirtualMachine])
+    #print(vm)
+    vms = []
+    for i in vm:
+        if i.runtime.powerState == 'poweredOn':
+            off_nic = virtual_nic_state(i)
+            if off_nic:
+                vms.append(off_nic)
+
+    print(vms)
+
+
     
-    vm = get_obj(content, [vim.VirtualMachine], 'windows-10-1903-test-239')
+    #vm = get_obj(content, [vim.VirtualMachine], 'centos7-lianshou')
+
+    #virtual_nic_state(vm)
+
+
+
+
     #ip_assign(vm)
-    print(vm)
-    vm.Rename('windows-10-1903-test-239_1')
+    #print(vm)
+    #vm.Rename('windows-10-1903-test-239_1')
 
 
 
