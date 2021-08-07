@@ -329,8 +329,10 @@ if __name__ == '__main__':
     memory = 2
     cpu_num = 2
     disk_size = ''
-    #content = si.RetrieveContent()
 
+ 
+    '''
+    #content = si.RetrieveContent()
     vm = get_obj1(content, [vim.VirtualMachine])
     #print(vm)
     vms = []
@@ -341,23 +343,22 @@ if __name__ == '__main__':
                 vms.append(off_nic)
 
     print(vms)
-
-
+    '''
+   
     
-    #vm = get_obj(content, [vim.VirtualMachine], 'centos7-lianshou')
+    vm = get_obj(content, [vim.VirtualMachine], 'centos7-lianshou')
+    spec = vim.vm.ConfigSpec()
+    spec.annotation = "test"
+    vm.ReconfigVM_Task(spec)
 
     #virtual_nic_state(vm)
-
-
-
-
     #ip_assign(vm)
     #print(vm)
     #vm.Rename('windows-10-1903-test-239_1')
 
 
 
-    '''
+   
 
     for line in re.split(';', vm_name.strip()):
         if not line.strip():
@@ -411,38 +412,3 @@ if __name__ == '__main__':
         clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, 
                  vm_ip, vm_netmask, vm_gateway, power, cpu_num, memory, 
                  disk_size, vm_hostname, dns, folder_obj)
-        '''
-
-
-
-
-
-
-    
-
-    
-    
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-
-
-
-
