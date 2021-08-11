@@ -346,9 +346,11 @@ if __name__ == '__main__':
     '''
    
     
-    vm = get_obj(content, [vim.VirtualMachine], 'centos7-lianshou')
+    vm = get_obj(content, [vim.VirtualMachine], 'jenkins')
+    cpu = vm.summary.config.numCpu #模板cpu 
+    memorySize = int(vm.summary.config.memorySizeMB) / 1024 #模板内存
     spec = vim.vm.ConfigSpec()
-    spec.annotation = "test"
+    spec.annotation = "test" #备注
     vm.ReconfigVM_Task(spec)
 
     #virtual_nic_state(vm)
