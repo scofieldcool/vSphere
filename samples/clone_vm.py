@@ -300,8 +300,66 @@ def virtual_nic_state(vm_obj):
                 i = i + 1 #如果有网卡连接则加1
     if i == 0:
        return vm_obj.name
-    
+
+
+
+def get_obj(content, vimtype, name):
+    obj = None
+    container = content.viewManager.CreateContainerView(
+        content.rootFolder, vimtype, True)
+    for c in container.view:
+        if c.name == name:
+            obj = c
+            break
+    return obj
+
+
+def add_nic(si, vm, network_name):
+    """
+    :param si: Service Instance
+    :param vm: Virtual Machine Object
+    :param network_name: Name of the Virtual Network
+    """
+    spec = vim.vm.ConfigSpec()
+    nic_changes = []
+
+    nic_spec = vim.vm.device.VirtualDeviceSpec()
+    nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.add
+
+    nic_spec.device = vim.vm.device.VirtualE1000()
+
+    nic_spec.device.deviceInfo = vim.Description()
+    nic_spec.device.deviceInfo.summary = ''
+    content = si.RetrieveContent()
+    network = get_obj(content, [vim.Network], network_name)
+    if isinstance(network, vim.OpaqueNetwork):
+        nic_spec.device.backing = \
+            vim.vm.device.VirtualEthernetCard.OpaqueNetworkBackingInfo()
+        nic_spec.device.backing.opaqueNetworkType = \
+            network.summary.opaqueNetworkType
+        nic_spec.device.backing.opaqueNetworkId = \
+            network.summary.opaqueNetworkId
+    else:
+        nic_spec.device.backing = \
+            vim.vm.device.VirtualEthernetCard.NetworkBackingInfo()
+        nic_spec.device.backing.useAutoDetect = False
+        #nic_spec.device.backing.deviceName = network
+        nic_spec.device.backing.deviceName = network_name
+
+    nic_spec.device.connectable = vim.vm.device.VirtualDevice.ConnectInfo()
+    nic_spec.device.connectable.startConnected = True
+    nic_spec.device.connectable.allowGuestControl = True
+    nic_spec.device.connectable.connected = False
+    nic_spec.device.connectable.status = 'untried'
+    nic_spec.device.wakeOnLanEnabled = True
+    nic_spec.device.addressType = 'assigned'
+
+    nic_changes.append(nic_spec)
+    spec.deviceChange = nic_changes
+    vm.ReconfigVM_Task(spec=spec)
+    print("NIC CARD ADDED")
   
+
 
 
 
@@ -313,6 +371,10 @@ if __name__ == '__main__':
     password = 'infohold123ABC@@'
 
     content, si = connect_vsphere(ip, user, password, port)
+    vm = get_obj(content, [vim.VirtualMachine], 'bdp_mongodb')
+    add_nic(si,vm,'192.168.9.0_24_Distributed')
+
+
     host_ips = []
     vm_names = []
     dns = ''
@@ -346,7 +408,9 @@ if __name__ == '__main__':
     '''
    
     
-    vm = get_obj(content, [vim.VirtualMachine], 'jenkins')
+    vm = get_obj(content, [vim.VirtualMachine], 'test')
+    
+    vm.Destroy_Task()
     cpu = vm.summary.config.numCpu #模板cpu 
     memorySize = int(vm.summary.config.memorySizeMB) / 1024 #模板内存
     spec = vim.vm.ConfigSpec()

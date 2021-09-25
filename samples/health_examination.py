@@ -51,7 +51,7 @@ if __name__ == '__main__':
     ip = '192.168.9.242'
     port = 443
     user = 'administrator@info.com'
-    password = 'infohold123ABC@'          
+    password = 'infohold123ABC@@'          
     content, si = connect_vsphere(ip, user, password, port)
     container = content.viewManager.CreateContainerView(
         content.rootFolder, [vim.HostSystem], True)
