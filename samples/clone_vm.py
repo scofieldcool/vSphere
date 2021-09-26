@@ -408,12 +408,14 @@ if __name__ == '__main__':
     '''
    
     
-    vm = get_obj(content, [vim.VirtualMachine], 'test')
+    vm = get_obj(content, [vim.VirtualMachine], 'bdp_mongodb')
     
-    vm.Destroy_Task()
+    #vm.Destroy_Task() #销毁虚拟机
     cpu = vm.summary.config.numCpu #模板cpu 
+    note = vm.config.annotation
     memorySize = int(vm.summary.config.memorySizeMB) / 1024 #模板内存
     spec = vim.vm.ConfigSpec()
+    spec.name = 'bdp_mongodb1'
     spec.annotation = "test" #备注
     vm.ReconfigVM_Task(spec)
 
