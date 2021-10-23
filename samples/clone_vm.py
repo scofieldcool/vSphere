@@ -371,8 +371,15 @@ if __name__ == '__main__':
     password = 'infohold123ABC@@'
 
     content, si = connect_vsphere(ip, user, password, port)
-    vm = get_obj(content, [vim.VirtualMachine], 'bdp_mongodb')
-    add_nic(si,vm,'192.168.9.0_24_Distributed')
+    vm = get_obj(content, [vim.VirtualMachine], 'centos-7.7-1908-dev-124')
+    #add_nic(si,vm,'192.168.9.0_24_Distributed')
+
+    snapshot_name = "snapshot_name"
+    description = "Test snapshot"
+    dump_memory = False
+    quiesce = False
+
+    vm.CreateSnapshot(snapshot_name, description, dump_memory, quiesce)# 创建快照
 
 
     host_ips = []
