@@ -374,7 +374,7 @@ if __name__ == '__main__':
     vm = get_obj(content, [vim.VirtualMachine], 'centos-7.7-1908-dev-124')
     #add_nic(si,vm,'192.168.9.0_24_Distributed')
 
-    snapshot_name = "snapshot_name"
+    snapshot_name = "snapshot_name" 
     description = "Test snapshot"
     dump_memory = False
     quiesce = False
