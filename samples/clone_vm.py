@@ -359,10 +359,6 @@ def add_nic(si, vm, network_name):
     vm.ReconfigVM_Task(spec=spec)
     print("NIC CARD ADDED")
   
-
-
-
-
 if __name__ == '__main__':
 
     ip = '192.168.9.242'
@@ -413,10 +409,7 @@ if __name__ == '__main__':
 
     print(vms)
     '''
-   
-    
     vm = get_obj(content, [vim.VirtualMachine], 'bdp_mongodb')
-    
     #vm.Destroy_Task() #销毁虚拟机
     cpu = vm.summary.config.numCpu #模板cpu 
     note = vm.config.annotation
@@ -430,10 +423,6 @@ if __name__ == '__main__':
     #ip_assign(vm)
     #print(vm)
     #vm.Rename('windows-10-1903-test-239_1')
-
-
-
-   
 
     for line in re.split(';', vm_name.strip()):
         if not line.strip():
@@ -482,8 +471,6 @@ if __name__ == '__main__':
         if not folder_obj:
             print("文件夹 {} 不存在".format(folder))
         print('获取到文件夹对象 {}'.format(folder_obj))
-
-            
         clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, 
                  vm_ip, vm_netmask, vm_gateway, power, cpu_num, memory, 
                  disk_size, vm_hostname, dns, folder_obj)
