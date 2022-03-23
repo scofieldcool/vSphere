@@ -301,8 +301,6 @@ def virtual_nic_state(vm_obj):
     if i == 0:
        return vm_obj.name
 
-
-
 def get_obj(content, vimtype, name):
     obj = None
     container = content.viewManager.CreateContainerView(
@@ -312,7 +310,6 @@ def get_obj(content, vimtype, name):
             obj = c
             break
     return obj
-
 
 def add_nic(si, vm, network_name):
     """
@@ -367,17 +364,16 @@ if __name__ == '__main__':
     password = 'infohold123ABC@@'
 
     content, si = connect_vsphere(ip, user, password, port)
-    vm = get_obj(content, [vim.VirtualMachine], 'centos-7.7-1908-dev-124')
+    vm = get_obj(content, [vim.VirtualMachine], 'centos-7.7-1908-db-110')
+    hostname = vm.summary.guest.hostName
     #add_nic(si,vm,'192.168.9.0_24_Distributed')
 
-    snapshot_name = "snapshot_name" 
-    description = "Test snapshot"
-    dump_memory = False
-    quiesce = False
+    #snapshot_name = "snapshot_name" 
+    #description = "Test snapshot"
+    #dump_memory = False
+    #quiesce = False
 
-    vm.CreateSnapshot(snapshot_name, description, dump_memory, quiesce)# 创建快照
-
-
+    #vm.CreateSnapshot(snapshot_name, description, dump_memory, quiesce)# 创建快照
     host_ips = []
     vm_names = []
     dns = ''
@@ -395,7 +391,6 @@ if __name__ == '__main__':
     cpu_num = 2
     disk_size = ''
 
- 
     '''
     #content = si.RetrieveContent()
     vm = get_obj1(content, [vim.VirtualMachine])
