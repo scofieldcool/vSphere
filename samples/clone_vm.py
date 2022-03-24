@@ -362,17 +362,15 @@ if __name__ == '__main__':
     port = 443
     user = 'administrator@info.com'
     password = 'infohold123ABC@@'
-
     content, si = connect_vsphere(ip, user, password, port)
     vm = get_obj(content, [vim.VirtualMachine], 'centos-7.7-1908-db-110')
     hostname = vm.summary.guest.hostName
     #add_nic(si,vm,'192.168.9.0_24_Distributed')
-
+    host_obj = get_obj(content, [vim.HostSystem], "192.168.9.190")
     #snapshot_name = "snapshot_name" 
     #description = "Test snapshot"
     #dump_memory = False
     #quiesce = False
-
     #vm.CreateSnapshot(snapshot_name, description, dump_memory, quiesce)# 创建快照
     host_ips = []
     vm_names = []
