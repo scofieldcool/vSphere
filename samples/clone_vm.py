@@ -466,4 +466,4 @@ if __name__ == '__main__':
         print('获取到文件夹对象 {}'.format(folder_obj))
         clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, 
                  vm_ip, vm_netmask, vm_gateway, power, cpu_num, memory, 
-                 disk_size, vm_hostname, dns, folder_obj)
+                 disk_size, vm_hostname, dns, folder_obj)git config --global user.email "youremail@yourdomain.com"
