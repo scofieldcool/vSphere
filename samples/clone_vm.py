@@ -1,4 +1,5 @@
 # coding: UTF-8
+from operator import truediv
 import os
 import sys
 import re
@@ -402,7 +403,17 @@ if __name__ == '__main__':
 
     print(vms)
     '''
-    vm = get_obj(content, [vim.VirtualMachine], 'bdp_mongodb')
+    vm = get_obj(content, [vim.VirtualMachine], 'jenkins-salve01')
+    EthernetCard = 0
+    for dev in vm.config.hardware.device:
+        if isinstance(dev,vim.vm.device.VirtualEthernetCard):
+            #print(dev.connectable.connected)
+            if dev.connectable.connected:
+                EthernetCard = EthernetCard + 1
+    #print(EthernetCard)
+    if EthernetCard !=0:
+        print(vm.name)
+            
     #vm.Destroy_Task() #销毁虚拟机
     cpu = vm.summary.config.numCpu #模板cpu 
     note = vm.config.annotation
