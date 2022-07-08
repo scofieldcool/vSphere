@@ -44,8 +44,6 @@ def get_obj1(content, vimtype):
        vm_obj.append(c)
     return vm_obj
 
-
-
 def connect_vsphere(host,user, pwd, port=443):
     try:
         context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
@@ -257,7 +255,6 @@ def clone_vm(template_obj, vm_name, host_obj, datastore_obj, vlan, vm_ip, vm_net
         print('虚拟机 {} 克隆失败 {}'.format(vm_name, e))
         sys.exit(1)
 
-
 def ip_assign(vm):
     adaptermap = vim.vm.customization.AdapterMapping()
     globalip = vim.vm.customization.GlobalIPSettings()
@@ -298,7 +295,7 @@ def virtual_nic_state(vm_obj):
     if len(virtual_nic_device ) != 0:
         for nic in virtual_nic_device:
             if nic.connectable.connected == True:
-                i = i + 1 #如果有网卡连接则加1
+                i = i + 1 #如果有网卡连接则加1,查询网卡的数量。
     if i == 0:
        return vm_obj.name
 
@@ -351,7 +348,7 @@ def add_nic(si, vm, network_name):
     nic_spec.device.connectable.status = 'untried'
     nic_spec.device.wakeOnLanEnabled = True
     nic_spec.device.addressType = 'assigned'
-
+    #加网卡
     nic_changes.append(nic_spec)
     spec.deviceChange = nic_changes
     vm.ReconfigVM_Task(spec=spec)
@@ -446,7 +443,6 @@ if __name__ == '__main__':
             sys.exit(1)
         g = vm_ip.split('.',-1)
         vm_gateway = g[0] + '.' + g[1] + '.' + g[2] + '.' + '1'
-
         vm_obj = get_obj(content, [vim.VirtualMachine], vm_name)
         if vm_obj:
             print("虚拟机 {} 已经存在，请选择其他名称". format(vm_name))

@@ -35,19 +35,14 @@ def main(ip, username, password):
 	# datacenters = container.view
     clusters = containerView.view
     for cluster in clusters:
-		#集群名
-	    vmName = cluster.name
-        print("集群名称：{}".format(vmName))
-		#集群cpu个数
-	    numCpuCores = cluster.summary.numCpuCores
-		# 集群cpu容量
-	    totalCpu = cluster.summary.totalCpu
-		#集群内存容量
-	    totalMemory = cluster.summary.totalMemory
-		#集群主机数
-	    host_count = len(cluster.host)
 
+        hosts = cluster.host[0]
+        hostconfig = hosts.configManager.dateTimeSystem
+
+        #print(cluster.host)
+		
 ip = '192.168.9.242'
+
 username = 'administrator@info.com'
 password = 'infohold123ABC@@'   
 main(ip, username, password)
